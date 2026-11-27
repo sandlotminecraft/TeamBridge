@@ -1,5 +1,6 @@
-name: BoltParties
+name: TeamBridge
 version: '${version}'
-main: com.sandlotminecraft.boltparties.BoltParties
+main: com.sandlotminecraft.teambridge.TeamBridge
 api-version: '1.21'
-depend: [ Bolt, Parties ]
+depend: [Parties, LuckPerms]
+softdepend: [Bolt, GriefPrevention]

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.sandlotminecraft'
-version = '1.0.3'
+version = '2.0.0'
 
 repositories {
     mavenCentral()
@@ -30,11 +30,31 @@ repositories {
     }
 }
 
+// The T-02 artifact, GriefPrevention 16.18.8-sandlot.1 (the trustee provider SPI). It is not
+// published to any Maven repository, so it is a file dependency: by default the jar built in a
+// sibling checkout of sandlotminecraft/GriefPrevention (`mvn package` on `sandlot/release`), or
+// any path given with -PgriefPreventionJar=<path>.
+def griefPreventionJar = findProperty('griefPreventionJar') ?: '../GriefPrevention/target/GriefPrevention.jar'
+
 dependencies {
     compileOnly "org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT"
     compileOnly "org.popcraft:bolt-common:1.2.37"
     compileOnly "org.popcraft:bolt-bukkit:1.2.37"
     compileOnly "com.alessiodp.parties:parties-api:3.2.18"
+    compileOnly "net.luckperms:api:5.5"
+    compileOnly files(griefPreventionJar)
+
+    testImplementation platform("org.junit:junit-bom:5.11.4")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "failed"
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
 }
 
 def targetJavaVersion = 21
@@ -56,7 +76,7 @@ tasks.withType(JavaCompile).configureEach {
 processResources {
     def props = [version: version]
     inputs.properties props
-    filteringCharset 'UTF-8'
+    filteringCharset = 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
     }
