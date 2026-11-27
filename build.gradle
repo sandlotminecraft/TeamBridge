@@ -9,8 +9,8 @@ version = '2.0.0'
 repositories {
     mavenCentral()
     maven {
-        name = "spigotmc-repo"
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
     }
     maven {
         name = "sonatype"
@@ -36,8 +36,17 @@ repositories {
 // any path given with -PgriefPreventionJar=<path>.
 def griefPreventionJar = findProperty('griefPreventionJar') ?: '../GriefPrevention/target/GriefPrevention.jar'
 
+// The provider and the transformer implement GriefPrevention's and Bolt's interfaces, so their
+// tests need the compileOnly dependencies on the test classpath.
+configurations {
+    testImplementation.extendsFrom compileOnly
+}
+
 dependencies {
-    compileOnly "org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT"
+    // The exact build `hard` runs (its data/libraries/io/papermc/paper/paper-api/), never a range: a
+    // range resolves to a pre-release. Its class files are Java 25, so the build runs on JDK 25;
+    // the compile release stays 21.
+    compileOnly "io.papermc.paper:paper-api:26.3.build.262-stable"
     compileOnly "org.popcraft:bolt-common:1.2.37"
     compileOnly "org.popcraft:bolt-bukkit:1.2.37"
     compileOnly "com.alessiodp.parties:parties-api:3.2.18"
@@ -65,6 +74,9 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
+    // paper-api 26.3 publishes Gradle metadata that asks for JVM 25. The classes are compiled with
+    // --release 21 against it, so the target-JVM match is turned off rather than the release raised.
+    disableAutoTargetJvm()
 }
 
 tasks.withType(JavaCompile).configureEach {

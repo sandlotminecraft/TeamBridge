@@ -4,3 +4,18 @@ main: com.sandlotminecraft.teambridge.TeamBridge
 api-version: '1.21'
 depend: [Parties, LuckPerms]
 softdepend: [Bolt, GriefPrevention]
+commands:
+  caddteam:
+    description: Add your team, or the named team, to a Bolt protection.
+    usage: /caddteam [team]
+  cremoveteam:
+    description: Remove your team, or the named team, from a Bolt protection.
+    usage: /cremoveteam [team]
+  teambridge:
+    description: TeamBridge administration.
+    usage: /teambridge audit
+    permission: teambridge.admin
+permissions:
+  teambridge.admin:
+    description: Run /teambridge audit.
+    default: op
